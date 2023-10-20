@@ -7,6 +7,7 @@ import { CalendarEvent } from "../components/CalendarEvent"
 import { CalendarModal } from '../components/CalendarModal'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
+import { useUiStore } from '../../hooks'
 
   const event = [
     {
@@ -22,34 +23,39 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
     }
   ]
 
-  const onSelect = (event) => {
-    console.log(event);
-  }
-  const onDoubleClick = (event) =>{
-    console.log(event);
-  }
 
-  const onViewChanged = (event) => {
-    console.log({click : event});
-    localStorage.setItem('lastView' , event);
-    //setLastView(event);
-  }
-
-  const eventStyleGetter = (event, start, end, isSelected) => {
-
-    const style = {
-        backgroundColor:'#BD75DA',
-        borderRadius:'0px',
-        color:'black'
-    }
-
-    return {
-        style
-    }
-  }
+ 
 
 export const CalendarPage = () => {
     const [lastView, setLastView] = useState(localStorage.getItem('lastView') || 'week');
+    const { openDateModal } = useUiStore();
+
+    const eventStyleGetter = (event, start, end, isSelected) => {
+
+      const style = {
+          backgroundColor:'#BD75DA',
+          borderRadius:'0px',
+          color:'black'
+      }
+  
+      return {
+          style
+      }
+    }
+    
+    const onSelect = (event) => {
+      console.log(event);
+    }
+    const onDoubleClick = (event) =>{
+      openDateModal();
+    }
+  
+    const onViewChanged = (event) => {
+      console.log({click : event});
+      localStorage.setItem('lastView' , event);
+      //setLastView(event);
+    }
+
     return (
         <>
             <Navbar />
@@ -70,6 +76,7 @@ export const CalendarPage = () => {
                 onSelectEvent={onSelect}
                 onView={onViewChanged}
                 defaultView={lastView}
+                
                 />
                 <CalendarModal />
             

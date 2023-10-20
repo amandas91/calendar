@@ -1,8 +1,10 @@
 import  { useState } from 'react';
 import Modal from 'react-modal';
-import { addHours } from 'date-fns';
+import { addHours, differenceInSeconds } from 'date-fns';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Swal from 'sweetalert2';
+import { useUiStore } from '../../hooks/';
 
 const customStyles = {
     content: {
@@ -19,7 +21,8 @@ const customStyles = {
   
 
 export const CalendarModal = () => {
-    const [isOpen, setIsOpen] = useState(true);
+
+    const { isDateModalOpen, closeDateModal } = useUiStore();// Hook
 
     /**
      * FORMULARIO
@@ -49,31 +52,65 @@ export const CalendarModal = () => {
     }
 
     const onCloeModal = () => {
-        console.log('Cerrar');
-        setIsOpen(false);
+        closeDateModal();
+        //console.log('Cerrar');
+        //setIsOpen(false);
+    }
+
+    const onSubmit = async( event) =>{
+        event.preventDefault();
+        //setFormSubmitted(true);
+
+        const difference = differenceInSeconds(formValues.end, formValues.start);
+        console.log(difference);
+
+        if(isNaN(difference) || difference <= 0){
+            Swal.fire(
+                'Fechas Incorrectas',
+                'Revisar fechas',
+                'error'
+              )
+        }
+
+        if(formValues.title.length <= 0) return;
+
+        console.log(formValues);
     }
 
     return ( 
-        <Modal 
-        isOpen={isOpen}
-        style={customStyles}
-        // className="modal"
-        // overlayClassName="modal-fondo"
+        <Modal
+        isOpen={ isDateModalOpen }
+        style={ customStyles }
+        //className="modal"
+        //overlayClassName="modal-fondo"
+        //``
         onRequestClose={onCloeModal}
-        closeTimeoutMS={200}
-        >
+        closeTimeoutMS={ 200 }
+    >
             <h1> Nuevo evento </h1>
             <hr />
-            <form className="container">
+            <form className="container" onSubmit={ onSubmit }>
 
                 <div className="form-group mb-2">
                     <label>Fecha y hora inicio</label>
-                    <DatePicker selected={formValues.start} onChange={ (event) => onDateChanged (event, 'start')} />
+                    <DatePicker selected={formValues.start}
+                     onChange={ (event) => onDateChanged (event, 'start')}
+                     dateFormat='Pp'
+                    className='form-control'
+                    showTimeSelect
+                    timeCaption='Hora' />
                 </div>
 
                 <div className="form-group mb-2">
                     <label>Fecha y hora fin</label>
-                    <DatePicker selected={formValues.end} />
+                    <DatePicker 
+                    minDate={ formValues.start}
+                    selected={formValues.end} 
+                    onChange={ (event) => onDateChanged (event, 'end')}
+                    dateFormat='Pp'
+                    className='form-control'
+                    showTimeSelect
+                    timeCaption='Hora' />
                 </div>
 
                 <hr />
