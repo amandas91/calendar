@@ -20,13 +20,34 @@ export const calendarSlice = createSlice ({
         atactiveEvent:null
     },
     reducers:{
+
         onSetActiveEvent: (state, { payload }) => {
             //Hacer llamado de un id, o de toda la información
             //activeEcent recibirá la nueva información del formulario
             state.atactiveEvent = payload;
+        },
+        onAddNewEvent: (state, { payload }) => {
+            state.events.push(payload);
+            state.atactiveEvent = null;
+        },
+        onUpdateEvent: (state, { payload }) =>{
+            state.events = state.events.map ( event => {
+                if(event._id === payload._id){
+                    return payload;
+                }
+
+                return event;
+            })
+        },
+        onDeleteEvent: (state) =>{
+
         }
     }
 
 });
 
-export const { onSetActiveEvent } = calendarSlice.actions;
+export const { onSetActiveEvent,
+    atactiveEvent,
+    onAddNewEvent,
+    onUpdateEvent,
+    onDeleteEvent } = calendarSlice.actions;

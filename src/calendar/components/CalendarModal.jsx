@@ -1,10 +1,10 @@
-import  { useState } from 'react';
+import  { useEffect, useMemo, useState } from 'react';
 import Modal from 'react-modal';
 import { addHours, differenceInSeconds } from 'date-fns';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Swal from 'sweetalert2';
-import { useUiStore } from '../../hooks/';
+import { useCalendarStore, useUiStore } from '../../hooks/';
 
 const customStyles = {
     content: {
@@ -24,6 +24,11 @@ export const CalendarModal = () => {
 
     const { isDateModalOpen, closeDateModal } = useUiStore();// Hook
 
+    const { atactiveEvent, setActiveEvent } = useCalendarStore();
+    
+    //Para validar formulario
+    const [ formSubmited, setFormSubmited ] = useState(false);
+
     /**
      * FORMULARIO
      */
@@ -36,6 +41,22 @@ export const CalendarModal = () => {
     }
         
     )
+
+    const titleClass = useMemo( () => {
+        if(!formSubmited) return '';
+
+        return (formValues.title.length > 0)
+        ? ''
+        : 'is-invalid'
+
+    }, [formValues.title, formSubmited]);
+
+    useEffect( () => {
+        if(atactiveEvent !== null){
+            setFormValues({...atactiveEvent});
+        }
+
+    }, [atactiveEvent]);
 
     const onInputChanged = ({target}) => {
         setFormValues({
@@ -59,7 +80,7 @@ export const CalendarModal = () => {
 
     const onSubmit = async( event) =>{
         event.preventDefault();
-        //setFormSubmitted(true);
+        setFormSubmited(true);
 
         const difference = differenceInSeconds(formValues.end, formValues.start);
         console.log(difference);
@@ -118,9 +139,10 @@ export const CalendarModal = () => {
                     <label>Titulo y notas</label>
                     <input 
                         type="text" 
-                        className="form-control"
+                        //className="form-control"
                         placeholder="Título del evento"
                         name="title"
+                        className={`form-control ${titleClass}`}
                         autoComplete="off"
                         value={formValues.title}
                         onChange={ onInputChanged }
