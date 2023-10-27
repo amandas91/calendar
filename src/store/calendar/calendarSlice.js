@@ -1,34 +1,42 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { addHours } from "date-fns";
 
+
+const temEvent = {
+    _id:new Date().getDate(),
+    culture:'es',
+    title: 'Día de muertos',
+    notes: 'Comprar pan de muerto',
+    start: new Date(),
+    end: addHours( new Date(), 3),
+    bgColor: '#B705FF',
+    user:{
+        _id:'123',
+        name:'Amanda Sabino'
+    }
+}
+
+
 export const calendarSlice = createSlice ({
     name: 'calendar',
     initialState:{
         events: [
             {
-                title: 'Día de muertos',
-                notes: 'Comprar pan de muerto',
-                start: new Date(),
-                end: addHours( new Date(), 3),
-                bgColor: '#B705FF',
-                user:{
-                    _id:'123',
-                    name:'Amanda Sabino'
-                }
+                temEvent
             }
         ], 
-        atactiveEvent:null
+        activeEvent:null
     },
     reducers:{
 
-        onSetActiveEvent: (state, { payload }) => {
+        onSeactiveEvent: (state, { payload }) => {
             //Hacer llamado de un id, o de toda la información
             //activeEcent recibirá la nueva información del formulario
-            state.atactiveEvent = payload;
+            state.activeEvent = payload;
         },
         onAddNewEvent: (state, { payload }) => {
             state.events.push(payload);
-            state.atactiveEvent = null;
+            state.activeEvent = null;
         },
         onUpdateEvent: (state, { payload }) =>{
             state.events = state.events.map ( event => {
@@ -40,14 +48,18 @@ export const calendarSlice = createSlice ({
             })
         },
         onDeleteEvent: (state) =>{
-
+            if(state.activeEvent ){
+                state.events = state.events.filter (event => event._id !== state.activeEvent._id);
+                state.activeEvent = null;
+            }
         }
     }
 
 });
 
-export const { onSetActiveEvent,
-    atactiveEvent,
+export const { 
+    activeEvent,
+    onSeactiveEvent,
     onAddNewEvent,
     onUpdateEvent,
     onDeleteEvent } = calendarSlice.actions;

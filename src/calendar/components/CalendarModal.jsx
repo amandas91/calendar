@@ -24,7 +24,8 @@ export const CalendarModal = () => {
 
     const { isDateModalOpen, closeDateModal } = useUiStore();// Hook
 
-    const { atactiveEvent, setActiveEvent } = useCalendarStore();
+    //Eliminar setActiveEvent
+    const { activeEvent,startSavingEvent } = useCalendarStore();
     
     //Para validar formulario
     const [ formSubmited, setFormSubmited ] = useState(false);
@@ -52,11 +53,11 @@ export const CalendarModal = () => {
     }, [formValues.title, formSubmited]);
 
     useEffect( () => {
-        if(atactiveEvent !== null){
-            setFormValues({...atactiveEvent});
+        if(activeEvent !== null){
+            setFormValues({...activeEvent});
         }
 
-    }, [atactiveEvent]);
+    }, [activeEvent]);
 
     const onInputChanged = ({target}) => {
         setFormValues({
@@ -96,6 +97,11 @@ export const CalendarModal = () => {
         if(formValues.title.length <= 0) return;
 
         console.log(formValues);
+        await startSavingEvent(formValues);
+        closeDateModal();
+        setFormSubmited(false);
+
+        
     }
 
     return ( 
