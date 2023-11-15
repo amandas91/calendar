@@ -1,6 +1,8 @@
 import React from 'react';
 import './LoginPage.css';
 import {useForm} from '../../hooks/'
+import { useAuthStore } from '../../hooks/useAuthStore';
+import Swal from 'sweetalert2';
 
 const loginFormFields = {
     loginEmail:'',
@@ -16,11 +18,27 @@ const registerFormFields = {
 }
 
 export const LoginPage = () => {
+    //Se manda a llamar, una vez que creemos nuestro hook
+    const {startLogin, startRegister } = useAuthStore();
+
     const {loginEmail, loginPassword, onInputChange: onLoginInputChange  } = useForm(loginFormFields);
+    const {registerName, registerEmail, registerPassword, registerPassword2, onInputChange:onRegisterInputChange } = useForm(registerFormFields);
     
     const loginSubmit = (event) =>{
         event.preventDefault();
-        console.log({loginEmail, loginPassword});
+        //console.log({loginEmail, loginPassword});
+        startLogin({email:loginEmail, password:loginPassword});
+    }
+
+    const registerSubmit = (event) =>{
+        event.preventDefault();
+        //console.log({registerName, registerEmail, registerPassword, registerPassword2});
+        if(registerPassword !== registerPassword2){
+            Swal.fire('Error en registro', 'Las contraseñas no son iguales', 'error');
+            return;
+        }
+        startRegister({name:registerName, email:registerEmail, password:registerPassword});
+
     }
 
     return (
@@ -61,12 +79,15 @@ export const LoginPage = () => {
 
                 <div className="col-md-6 login-form-2">
                     <h3>Registro</h3>
-                    <form>
+                    <form onSubmit={registerSubmit}>
                         <div className="form-group mb-2">
                             <input
                                 type="text"
                                 className="form-control"
                                 placeholder="Nombre"
+                                name='registerName'
+                                value={registerName}
+                                onChange={onRegisterInputChange}
                             />
                         </div>
                         <div className="form-group mb-2">
@@ -74,6 +95,9 @@ export const LoginPage = () => {
                                 type="email"
                                 className="form-control"
                                 placeholder="Correo"
+                                name='registerEmail'
+                                value={registerEmail}
+                                onChange={onRegisterInputChange}
                             />
                         </div>
                         <div className="form-group mb-2">
@@ -81,6 +105,9 @@ export const LoginPage = () => {
                                 type="password"
                                 className="form-control"
                                 placeholder="Contraseña" 
+                                name='registerPassword'
+                                value={registerPassword}
+                                onChange={onRegisterInputChange}
                             />
                         </div>
 
@@ -89,6 +116,9 @@ export const LoginPage = () => {
                                 type="password"
                                 className="form-control"
                                 placeholder="Repita la contraseña" 
+                                name='registerPassword2'
+                                value={registerPassword2}
+                                onChange={onRegisterInputChange}
                             />
                         </div>
 
